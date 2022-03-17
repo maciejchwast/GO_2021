@@ -14,6 +14,9 @@ class Point:
 
 class Straight:
 
+    def print(self):
+        return "y = "+str(round(self.a,2))+"X + "+str(round(self.b,2))
+
     def __init__(self, p1: Point, p2: Point):
         self.a = (p1.y - p2.y) / (p1.x - p2.x)
         self.b = p1.y - self.a * p1.x
@@ -76,6 +79,51 @@ def mirrorPoint(axe, p: Point):
         return Point(p.x, -p.y)
 
 
+def slopeToStandardLinearEquation(s: Straight):
+    a = s.a
+    b = 1
+    c = -s.b
+    return [a, b, c]
+
+
+def whichSide(s: Straight, p: Point):
+    if s.a * p.x + s.b < p.y:
+        return 'above'
+    elif s.a * p.x + s.b > p.y:
+        return 'below'
+    else:
+        return 'on'
+
+
+def pointsToLineTab(p1: Point, p2: Point):
+    a = (p1.y - p2.y) / (p1.x - p2.x)
+    b = p1.y - a * p1.x
+    return [a, b]
+
+
+def crossingPointCramer(t1, t2):
+    W = t1[0]*t2[1] - t2[0]*t1[1]
+    Wx = -t1[2]*t2[1] - (-t2[2]*t1[1])
+    Wy = t1[0]*(-t2[2]) - t2[0]*(-t1[2])
+
+    x = Wx/W
+    y = Wy/W
+
+    return Point(x, y)
+
+
+def crossingPointLines(l1: Line, l2: Line):
+    s1 = l1.belongs_to_straight
+    s2 = l2.belongs_to_straight
+    return crossingPointCramer(slopeToStandardLinearEquation(s1), slopeToStandardLinearEquation(s2))
+
+def calculateTriangleArea(p1: Point, p2: Point, p3:Point):
+    tmp1 = p2.x - p1.x
+    tmp2 = p3.y - p1.y
+    tmp3 = p3.x - p1.x
+    tmp4 = p2.y - p1.y
+    return 0.5 * ((tmp1*tmp2) - (tmp3*tmp4))
+
 if __name__ == '__main__':
     Pnt1 = randomPoint()
     Pnt2 = randomPoint()
@@ -89,3 +137,9 @@ if __name__ == '__main__':
     print("Line 1 was rotated by 10 radians. Now its coordinates are ", rotateLine(10, line1).print())
     print("Point 1 before mirror against OX: ", Pnt1.print(), " and after: ", mirrorPoint('x', Pnt1).print())
     print("Point 2 before mirror against OY: ", Pnt2.print(), " and after: ", mirrorPoint('y', Pnt2).print())
+    line2 = pointsToLine(Pnt3, Pnt2)
+    print("Line 1 is ", line1.belongs_to_straight.print())
+    print("Line 2 is ", line2.belongs_to_straight.print())
+    print("Lines 1 and 2 are crossing at ", crossingPointLines(line1, line2).print())
+    print("Points 1 2 and 3 are: 1: ", Pnt1.print(), " 2: ", Pnt2.print(), " 3: ", Pnt3.print())
+    print("Area of triangle made from points 1 2 and 3 is ", str(round(calculateTriangleArea(Pnt1, Pnt2, Pnt3),2)))
