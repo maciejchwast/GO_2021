@@ -1,5 +1,7 @@
 import random
 import math
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 class Point:
@@ -33,6 +35,43 @@ class Line:
         self.head = p1
         self.tail = p2
         self.belongs_to_straight = Straight(p1, p2)
+
+
+class Triangle:
+    tip1: Point
+    tip2: Point
+    tip3: Point
+
+    side1: Straight
+    side2: Straight
+    side3: Straight
+
+    def __init__(self,p1: Point,p2: Point, p3:Point):
+        self.tip1 = p1
+        self.tip2 = p2
+        self.tip3 = p3
+        self.side1 = Straight(self.tip1, self.tip2)
+        self.side2 = Straight(self.tip2, self.tip3)
+        self.side3 = Straight(self.tip3, self.tip1)
+
+    def draw(self):
+        plt.plot([self.tip1.x,self.tip2.x],[self.tip1.y, self.tip2.y])
+        plt.plot([self.tip2.x,self.tip3.x],[self.tip2.y, self.tip3.y])
+        plt.plot([self.tip3.x,self.tip1.x],[self.tip3.y, self.tip1.y])
+        plt.show()
+
+    def is_point_inside(self, p: Point):
+        plt.plot(p.x, p.y, 'o')
+        self.draw()
+        conditions = ["x","x","x"]
+        conditions[0] = whichSide(self.side1, p)
+        conditions[1] = whichSide(self.side2, p)
+        conditions[2] = whichSide(self.side3, p)
+        conditions.sort()
+        if conditions[0] == 'above' and conditions[1] == 'below' and conditions[2] == 'below':
+            return True
+        else:
+            return False
 
 
 def pointsToLine(p1: Point, p2: Point):
@@ -124,10 +163,7 @@ def calculateTriangleArea(p1: Point, p2: Point, p3:Point):
     tmp4 = p2.y - p1.y
     return 0.5 * ((tmp1*tmp2) - (tmp3*tmp4))
 
-if __name__ == '__main__':
-    Pnt1 = randomPoint()
-    Pnt2 = randomPoint()
-    Pnt3 = randomPoint()
+def lab1_and_2():
     print("Random points: ", Pnt1.print(), " ", Pnt2.print(), " ", Pnt3.print())
     line1 = pointsToLine(Pnt1, Pnt2)
     print("Does point 3 belong to straight created by points 1 and 2? ", belongsToLine(Pnt3, line1))
@@ -142,4 +178,18 @@ if __name__ == '__main__':
     print("Line 2 is ", line2.belongs_to_straight.print())
     print("Lines 1 and 2 are crossing at ", crossingPointLines(line1, line2).print())
     print("Points 1 2 and 3 are: 1: ", Pnt1.print(), " 2: ", Pnt2.print(), " 3: ", Pnt3.print())
-    print("Area of triangle made from points 1 2 and 3 is ", str(round(calculateTriangleArea(Pnt1, Pnt2, Pnt3),2)))
+    print("Area of triangle made from points 1 2 and 3 is ", str(round(calculateTriangleArea(Pnt1, Pnt2, Pnt3), 2)))
+
+if __name__ == '__main__':
+    Pnt1 = randomPoint()
+    Pnt2 = randomPoint()
+    Pnt3 = randomPoint()
+    Pnt4 = randomPoint()
+    #lab1_and_2()
+    #plt.plot([Pnt1.x, Pnt2.x], [Pnt1.y, Pnt2.y])
+    #plt.plot(Pnt3.x, Pnt3.y,'o')
+    #plt.show()
+    #print("The point is "+whichSide(Straight(Pnt1,Pnt2),Pnt3)+" line")
+    t1 = Triangle(Pnt1, Pnt2, Pnt3)
+    t1.draw()
+    print(t1.is_point_inside(Pnt4))
